@@ -1,0 +1,7 @@
+app_dependencies.tar.gz
+├── dependencies
+│   ├── Flask
+│   ├── Gunicorn
+│   ├── Jinja2
+│   └── Werkzeug
+└── README.md
