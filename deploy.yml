@@ -1,0 +1,39 @@
+---
+- name: Deploy the application
+  become: yes
+  become_user: appuser
+  copy:
+    src: "{{ app_src }}"
+    dest: "{{ app_dest }}"
+  tags:
+    - deploy
+
+- name: Set permissions on the deployment directory
+  file:
+    path: "{{ app_dest }}"
+    owner: appuser
+    group: appuser
+    mode: 0775
+  tags:
+    - deploy
+
+- name: Install dependencies for the application
+  pip:
+    name: "{{ app_dependencies }}"
+    state: present
+  tags:
+    - deploy
+
+- name: Start the application service
+  service:
+    name: "{{ app_service }}"
+    state: started
+  tags:
+    - deploy
+
+- name: Enable the application service to start on boot
+  service:
+    name: "{{ app_service }}"
+    enabled: yes
+  tags:
+    - deploy
