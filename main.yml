@@ -1,0 +1,44 @@
+---
+- name: Install required packages
+  become: yes
+  apt:
+    name: "{{ packages }}"
+    state: present
+
+- name: Create application directory
+  become: yes
+  file:
+    path: "{{ app_path }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+
+- name: Deploy application code
+  become: yes
+  copy:
+    src: "{{ app_code }}"
+    dest: "{{ app_path }}"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+
+- name: Configure firewall
+  become: yes
+  template:
+    src: firewall.j2
+    dest: "/etc/iptables/rules.v4"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Restart firewall service
+  become: yes
+  service:
+    name: iptables
+    state: restarted
+
+- name: Start application service
+  become: yes
+  service:
+    name: "{{ app_service }}"
+    state: started
+    enabled: yes
